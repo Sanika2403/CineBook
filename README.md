@@ -25,4 +25,5 @@ Jinja2 – Template engine for rendering dynamic content
 JavaScript – Client-side interactions and form handling
 
  Note on Data Persistence:-
+ Install Flask and Stripe using pip, then start the application by running python app.py to launch the CineBook movie ticket booking system.
 This application uses in-memory data storage implemented through Python data structures. All booking details, seat availability, and history are stored temporarily during runtime and are cleared when the server is stopped or restarted. This design choice was made intentionally to demonstrate the practical use of Data Structures and Algorithms rather than focusing on database integration.
