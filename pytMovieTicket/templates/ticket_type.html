@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="ticket-type-page">
+
+  <h2>{{ movie.title }}</h2>
+
+  <p><strong>Show Time:</strong> {{ show.time }}</p>
+  <p><strong>Screen:</strong> {{ show.screen }}</p>
+
+  <form method="post" class="ticket-form">
+
+    <div>
+      <label>Adults:</label>
+      <input type="number" name="adults" min="1" value="1" required>
+    </div>
+
+    <div>
+      <label>Kids:</label>
+      <input type="number" name="kids" min="0" value="0" required>
+    </div>
+
+    <button class="btn">Continue</button>
+  </form>
+
+</div>
+
+{% endblock %}

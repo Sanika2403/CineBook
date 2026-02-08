@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="shows-page">
+    <h2>{{ movie.title }} — Show Timings</h2>
+
+<div class="shows-grid">
+
+  {% for s in shows %}
+    {% if movie.category == "kids" %}
+      <form method="get" action="{{ url_for('ticket_type', show_id=s.id) }}">
+    {% else %}
+      <form method="get" action="{{ url_for('select_seats', show_id=s.id) }}">
+    {% endif %}
+
+        <button type="submit" class="show-btn">
+          <div><strong>{{ s.time }}</strong></div>
+          <div style="font-size:14px;">{{ s.screen }}</div>
+        </button>
+
+      </form>
+  {% endfor %}
+
+</div>
+
+{% endblock %}

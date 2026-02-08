@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<section class="hero home-hero">
+  <div class="centered-content">
+    <h2 class="home-title">YOUR TICKET TO ENTERTAINMENT</h2>
+
+    <p class="home-subtitle">
+      Smart Booking For Every Show — <em>Book. Sit. Enjoy.</em>
+    </p>
+
+    <a class="btn home-btn" href="{{ url_for('movies') }}">
+      Browse Movies
+    </a>
+  </div>
+</section>
+
+{% endblock %}

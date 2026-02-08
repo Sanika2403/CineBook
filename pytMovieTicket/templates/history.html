@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h2 class="history-title">Booking History</h2>
+
+{% if history %}
+  <div class="history-list">
+    {% for h in history %}
+  <div class="history-card">
+    <p><strong>Movie:</strong> {{ h.movie }}</p>
+    <p><strong>Show Time:</strong> {{ h.time }}</p>
+    <p><strong>Screen:</strong> {{ h.screen }}</p>
+    <p><strong>Seats:</strong> {{ h.seats }}</p>
+    <p><strong>Amount:</strong> ₹{{ h.amount }}</p>
+    <p><strong>Date:</strong> {{ h.date }}</p>
+  </div>
+{% endfor %}
+
+  </div>
+{% else %}
+  <p>No bookings yet.</p>
+{% endif %}
+
+<div class="history-actions">
+  <a href="{{ url_for('index') }}" class="btn back-home-btn">
+    Back to Home
+  </a>
+</div>
+
+
+{% endblock %}

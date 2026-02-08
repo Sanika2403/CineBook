@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h2 class="section-heading">Movies</h2>
+<!-- ===== SEARCH BAR ===== -->
+<form method="get" action="{{ url_for('search') }}" class="movie-search">
+  <input
+    type="text"
+    name="q"
+    placeholder="Search movie..."
+    required
+  >
+  <button type="submit" class="btn primary">Search</button>
+</form>
+
+
+<div class="movies-grid">
+  {% for m in movies %}
+    {% if m.category != "kids" %}
+      <div class="movie-card">
+
+        <div class="movie-poster">
+          <img src="{{ m.image }}" alt="{{ m.title }}">
+        </div>
+
+        <h4>{{ m.title }}</h4>
+
+        <p>Seats Available: {{ m.available_seats_count() }}</p>
+
+        <form method="get" action="{{ url_for('shows', movie_id=m.id) }}">
+          <button class="btn primary">BOOK</button>
+        </form>
+
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<hr style="margin:40px 0;">
+
+<h2 class="section-heading kids">Kids Movies</h2>
+
+<div class="movies-grid">
+  {% for m in movies %}
+    {% if m.category == "kids" %}
+      <div class="movie-card kids-card">
+
+        <div class="movie-poster">
+          <img src="{{ m.image }}" alt="{{ m.title }}">
+        </div>
+
+        <h4>{{ m.title }}</h4>
+
+        <p>Seats Available: {{ m.available_seats_count() }}</p>
+
+        <form method="get" action="{{ url_for('shows', movie_id=m.id) }}">
+          <button class="btn primary kids-btn">BOOK</button>
+        </form>
+
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="centered-seats-page">
+
+  <h3>Seat Selection</h3>
+
+  <!-- ===== PRICE DISPLAY ===== -->
+  {% if movie.category == "kids" %}
+    <p><strong>Adult Ticket:</strong> ₹{{ ADULT_PRICE }}</p>
+    <p><strong>Kid Ticket:</strong> ₹{{ KID_PRICE }}</p>
+  {% else %}
+    <p><strong>Price per seat:</strong> ₹{{ price_per_seat }}</p>
+  {% endif %}
+
+  <!-- ===== SEAT SELECTION FORM ===== -->
+  <form method="post" action="{{ url_for('toggle_seats') }}">
+
+    <div class="seat-grid">
+      {% for r in range(movie.rows) %}
+        <div class="seat-row">
+          {% for c in range(movie.cols) %}
+            {% set label = movie.seat_label(r, c) %}
+            {% if movie.is_booked(r, c) %}
+              <div class="seat taken">{{ label }}</div>
+            {% else %}
+              <label class="seat available">
+                <input
+                  type="checkbox"
+                  name="seat"
+                  value="{{ label }}"
+                  {% if label in selected %}checked{% endif %}
+                >
+                <span>{{ label }}</span>
+              </label>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="seat-actions">
+      <button class="btn update-btn" type="submit">
+        Update Selection
+      </button>
+    </div>
+  </form>
+
+  <!-- ===== UNDO FORM ===== -->
+  <form method="post" action="{{ url_for('undo') }}">
+    <button class="btn outline undo-btn" type="submit">
+        Undo Last
+    </button>
+</form>
+
+
+  <!-- ===== BOOKING SUMMARY ===== -->
+  {% if selected %}
+  <hr>
+
+  <div class="booking-summary">
+    <h3>Booking Summary</h3>
+
+    <p><strong>Movie:</strong> {{ movie.title }}</p>
+    <p><strong>Show Time:</strong> {{ time }}</p>
+    <p><strong>Screen:</strong> {{ screen }}</p>
+
+    <p>
+      <strong>Selected Seats:</strong>
+      {{ selected | join(", ") }}
+    </p>
+
+    {% if movie.category == "kids" %}
+      <p><strong>Adults:</strong> {{ state.adults }} × ₹{{ ADULT_PRICE }}</p>
+      <p><strong>Kids:</strong> {{ state.kids }} × ₹{{ KID_PRICE }}</p>
+    {% endif %}
+
+    <p>
+      <strong>Total Amount:</strong> ₹{{ total }}
+    </p>
+
+    <form action="{{ url_for('checkout') }}" method="get">
+      <button class="btn primary">
+        Proceed to Checkout
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

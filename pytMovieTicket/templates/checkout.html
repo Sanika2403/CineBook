@@ -1,0 +1,149 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="centered-payment">
+    <h2>Payment Checkout</h2>
+
+    <!-- ===== SHOW DETAILS ===== -->
+    <div class="booking-details">
+        <p><strong>Movie:</strong> {{ movie }}</p>
+        <p><strong>Show Time:</strong> {{ time }}</p>
+        <p><strong>Screen:</strong> {{ screen }}</p>
+    </div>
+
+    <hr style="margin:20px 0;">
+
+    <p style="font-size:18px; margin-bottom:20px;">
+        <strong>Total Payable:</strong> ₹{{ total }}
+    </p>
+
+    <!-- ===== STRIPE FORM ===== -->
+    <form id="payment-form" autocomplete="off" novalidate>
+
+        <!-- Card Number -->
+        <div class="field">
+            <label>Card Number</label>
+            <div id="card-number" class="stripe-input"></div>
+        </div>
+
+        <!-- Expiry -->
+        <div class="field">
+            <label>Expiry (MM / YY)</label>
+            <div id="card-expiry" class="stripe-input"></div>
+        </div>
+
+        <!-- CVV -->
+        <div class="field">
+            <label>CVV</label>
+            <div id="card-cvc" class="stripe-input"></div>
+        </div>
+
+        <!-- PIN INPUT -->
+        <div class="field">
+            <label for="pin">Transaction PIN</label>
+            <input
+                type="password"
+                id="pin"
+                class="pin-input"
+                placeholder="Enter 4 or 6 digit PIN"
+                maxlength="6"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                required
+            >
+            <small id="pin-error" style="color:red; display:none;">
+                PIN must be exactly 4 or 6 digits (numbers only)
+            </small>
+        </div>
+
+        <button type="submit" class="btn primary">
+            Pay Now
+        </button>
+    </form>
+</div>
+
+<!-- ===== STRIPE JS ===== -->
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    const stripe = Stripe("{{ stripe_public_key }}");
+    const elements = stripe.elements();
+
+    const style = {
+        base: {
+            fontSize: "16px",
+            color: "#0b1220",
+            fontFamily: "Arial, sans-serif"
+        }
+    };
+
+    const cardNumber = elements.create("cardNumber", { style });
+    const cardExpiry = elements.create("cardExpiry", { style });
+    const cardCvc = elements.create("cardCvc", { style });
+
+    cardNumber.mount("#card-number");
+    cardExpiry.mount("#card-expiry");
+    cardCvc.mount("#card-cvc");
+
+    const form = document.getElementById("payment-form");
+    const pinInput = document.getElementById("pin");
+    const pinError = document.getElementById("pin-error");
+
+    pinInput.addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, "");
+    });
+
+    form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const pin = pinInput.value;
+
+    if (!(pin.length === 4 || pin.length === 6)) {
+        pinError.style.display = "block";
+        return;
+    } else {
+        pinError.style.display = "none";
+    }
+
+    const { error } = await stripe.confirmCardPayment(
+        "{{ client_secret }}",
+        {
+            payment_method: {
+                card: cardNumber
+            }
+        }
+    );
+
+    // ❌ PAYMENT FAILED
+    if (error) {
+        alert("❌ Payment failed: " + error.message);
+        return;
+    }
+
+    // ✅ PAYMENT SUCCESS
+    alert("✅ Payment successful!");
+
+    // ✅ CONFIRM BOOKING IN BACKEND
+    fetch("/confirm_booking", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            window.location.href = "{{ url_for('history') }}";
+        } else {
+            alert("❌ Booking confirmation failed");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("❌ Error confirming booking");
+    });
+});
+
+</script>
+
+{% endblock %}
